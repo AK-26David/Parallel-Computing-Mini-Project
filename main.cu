@@ -27,7 +27,7 @@ const int BLOCK_SIZE = 256;
     cudaError_t err = call; \
     if (err != cudaSuccess) { \
         std::cerr << "CUDA Error: " << cudaGetErrorString(err) \
-                    << " at " << __FILE__ << ":" << __LINE__ << std::endl; \
+                  << " at " << __FILE__ << ":" << __LINE__ << std::endl; \
         exit(EXIT_FAILURE); \
     } \
 }
@@ -57,8 +57,8 @@ __global__ void assignClustersKernel(const uchar3* pixels, int* labels, const fl
 }
 
 __global__ void updateCentroidsKernel(const uchar3* pixels, const int* labels, 
-                                    float3* newCentroids, int* clusterSizes, 
-                                    int numPixels, int numClusters) {
+                                     float3* newCentroids, int* clusterSizes, 
+                                     int numPixels, int numClusters) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx >= numPixels) return;
 
@@ -69,8 +69,8 @@ __global__ void updateCentroidsKernel(const uchar3* pixels, const int* labels,
     atomicAdd(&clusterSizes[cluster], 1);
 }
 
-__global__ void finalizeCentroidsKernel(float3* centroids, const float3* newCentroids,
-                                        const int* clusterSizes, int numClusters) {
+__global__ void finalizeCentroidsKernel(float3* centroids, const float3* newCentroids, 
+                                       const int* clusterSizes, int numClusters) {
     int idx = threadIdx.x;
     if (idx >= numClusters) return;
     
@@ -175,7 +175,7 @@ void initializeCentroids(const cv::Mat& img, float3* d_centroids, int numCluster
     
     // Copy centroids to device
     CUDA_CHECK(cudaMemcpy(d_centroids, h_centroids.data(), numClusters * sizeof(float3),
-                        cudaMemcpyHostToDevice));
+                         cudaMemcpyHostToDevice));
 }
 
 // Main segmentation function
@@ -197,7 +197,7 @@ cv::Mat segmentImageWithKMeansCUDA(const cv::Mat& inputImg) {
     if (RESIZE_LARGE_IMAGES && 
         (img.cols > MAX_IMAGE_DIMENSION || img.rows > MAX_IMAGE_DIMENSION)) {
         double scale = std::min(static_cast<double>(MAX_IMAGE_DIMENSION) / img.cols,
-                                static_cast<double>(MAX_IMAGE_DIMENSION) / img.rows);
+                               static_cast<double>(MAX_IMAGE_DIMENSION) / img.rows);
         cv::resize(img, img, cv::Size(), scale, scale, cv::INTER_AREA);
         std::cout << "Image resized to: " << img.cols << "x" << img.rows << std::endl;
     }
@@ -314,8 +314,8 @@ int main() {
         }
         
         std::cout << "Image loaded successfully. Dimensions: " 
-                    << inputImage.cols << "x" << inputImage.rows << ", "
-                    << "Channels: " << inputImage.channels() << std::endl;
+                  << inputImage.cols << "x" << inputImage.rows << ", "
+                  << "Channels: " << inputImage.channels() << std::endl;
         
         // Run K-means segmentation
         cv::Mat segmentedImage = segmentImageWithKMeansCUDA(inputImage);
